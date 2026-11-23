@@ -1,5 +1,8 @@
 src/ConnectionFactory.java
 out/
+out_cli/
 .idea/
 *.class
 lib/
+result/
+adb_2026_task_2.iml
