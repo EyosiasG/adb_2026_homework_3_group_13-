@@ -1,5 +1,6 @@
 src/ConnectionFactory.java
 out/
+out_cli/
 .idea/
 *.class
 lib/
