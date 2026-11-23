@@ -4,3 +4,4 @@ out_cli/
 .idea/
 *.class
 lib/
+result/

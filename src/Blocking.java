@@ -39,7 +39,7 @@ public class Blocking {
 	public static int num_taks=30;
 	public static int num_queries_per_task = 3;
 
-	// ===== Benchmark settings (change them here) =====
+
 	public static int num_threads = 4;          // PART 1 - EXERCISE 3: try 1, 2, 4, 8, 16. 1 = serial execution (PART 2 - EXERCISE 1)
 	public static int warmup_seconds = 2;       // not measured: connections are opened and the JVM warms up
 	public static int duration_seconds = 30;    // measured time
@@ -93,6 +93,8 @@ public class Blocking {
 		try {
 			con.setAutoCommit(false);
 			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			// Part 2 - OPTIMIZATION : skip WAL flush on commit — commit returns as soon as data is in memory, not on disk
+			con.createStatement().execute("SET synchronous_commit = off");
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -315,8 +317,6 @@ public class Blocking {
 
                     con.commit();
                     tasks_finished.incrementAndGet();
-
-                    System.out.println("Task " + task + " read sum: " + sum);
                     return true;
                 }
 
@@ -336,8 +336,6 @@ public class Blocking {
 
                     con.commit();
                     tasks_finished.incrementAndGet();
-
-                    System.out.println("Task " + task + " inserted tuple " + newId);
                     return true;
                 }
 
@@ -354,8 +352,6 @@ public class Blocking {
 
                     con.commit();
                     tasks_finished.incrementAndGet();
-
-                    System.out.println("Task " + task + " table sum: " + sum);
                     return true;
                 }
 
@@ -374,8 +370,8 @@ public class Blocking {
                 }
 
 				con.commit();
-				int num_finished = tasks_finished.incrementAndGet();
-				System.out.println("Done task "+task+". I am finisher number "+num_finished);
+				// Part 2 - OPTIMIZATION : removed per-transaction println — System.out is synchronized and caused thread contention
+				tasks_finished.incrementAndGet();
 				return true;
 			} catch (SQLException e) {
 				// Old code only printed the error: the transaction was lost and the connection leaked.
