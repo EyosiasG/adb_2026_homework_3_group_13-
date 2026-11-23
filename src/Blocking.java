@@ -40,10 +40,9 @@ public class Blocking {
 	public static int num_queries_per_task = 3;
 
 
-	public static int num_threads = 4;          // PART 1 - EXERCISE 3: try 1, 2, 4, 8, 16. 1 = serial execution (PART 2 - EXERCISE 1)
-	public static int warmup_seconds = 2;       // not measured: connections are opened and the JVM warms up
-	public static int duration_seconds = 30;    // measured time
-
+	public static int num_threads = 4;         
+	public static int warmup_seconds = 2;      
+	public static int duration_seconds = 30;    
 	Connection con;
 	Random rand = new Random(123456);
 	int num_tuple = 50000;
@@ -67,7 +66,7 @@ public class Blocking {
 	final ThreadLocal<Connection> threadConnection = ThreadLocal.withInitial(this::openConnection);
 	
 	public Blocking(){
-		tasks_finished = new AtomicInteger(0);  //AtomicInteger provides thread-safe operations, while updating the same int value
+		tasks_finished = new AtomicInteger(0);  
 		for (int i = 0; i < 4; i++) {
 			commits[i] = new AtomicLong();
 			nanos[i] = new AtomicLong();
@@ -123,7 +122,7 @@ public class Blocking {
 			int[] results = ps.executeBatch();
 			con.commit();
 			con.setAutoCommit(true);
-			executeSQL("VACUUM ANALYZE blocking_data;", con); // fresh statistics for the query planner
+			executeSQL("VACUUM ANALYZE blocking_data;", con); // new statistics for the query planner
 			con.close();
 			System.out.println("Loaded " + results.length + " tuples");
 		} catch (SQLException e) {
@@ -381,7 +380,7 @@ public class Blocking {
 				}
 				System.err.println("Task "+task+" "+e.getMessage());
 				failed = true;
-				return true;                           // other errors: don't loop forever
+				return true;                           // other errors
 			} finally {
 				if (lock != null) lock.unlock();
 			}
