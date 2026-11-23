@@ -60,9 +60,7 @@ public class Blocking {
 	// writes can still deadlock: after 3 aborts a write runs alone among the writers, so it cannot starve
 	final ReentrantReadWriteLock gate = new ReentrantReadWriteLock(true);
 
-	// FIX: opening a new TCP connection per transaction ran out of local ports on macOS
-	// ("BindException: Can't assign requested address"). Each worker thread now opens ONE
-	// connection and reuses it. Still a separate connection per concurrently running transaction.
+	
 	final ThreadLocal<Connection> threadConnection = ThreadLocal.withInitial(this::openConnection);
 	
 	public Blocking(){
